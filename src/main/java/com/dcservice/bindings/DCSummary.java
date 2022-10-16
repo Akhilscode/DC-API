@@ -8,5 +8,7 @@ public class DCSummary {
 	private EducationInfo einfo;
 	
 	private IncomeInfo iInfo;
+	
+	private KidsInfo kinfo;
 
 }

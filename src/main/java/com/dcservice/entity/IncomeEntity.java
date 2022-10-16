@@ -14,13 +14,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
 @Entity
-@Table(name="EDUCTION_MASTER")
+@Table(name="EDUCATION_MASTER")
 @Data
 public class IncomeEntity {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Integer incomeId;
-private Integer caseNum;
+private Long  caseNum;
 private Long empIncome;
 private Long propertyIncome;
 private Long otherIncome;

@@ -16,7 +16,7 @@ public class DcCaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer caseId;
 	
-	private Integer caseNumber;
+	private Long caseNumber;
 	
 	private Integer appId;
 	
