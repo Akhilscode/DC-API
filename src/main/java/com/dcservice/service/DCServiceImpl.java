@@ -27,43 +27,43 @@ import com.dcservice.repository.PlanRepository;
 
 @Service
 public class DCServiceImpl implements DCService {
-     
+
 	@Autowired
 	private DCCasesRepository dcrepo;
-	
+
 	@Autowired
 	private PlanRepository prepo;
-	
+
 	@Autowired
 	private EducationRepository edurepo;
-	
+
 	@Autowired
 	private IncomeRepository irepo;
-	
+
 	@Autowired
 	private KidsRepository krepo;
-	
+
 	@Override
 	public Long findAppId(Integer appId) {
 		Optional<DcCaseEntity> findById = dcrepo.findById(appId);
-		if(findById.isPresent()) {
+		if (findById.isPresent()) {
 			DcCaseEntity dcCaseEntity = findById.get();
-			return dcCaseEntity.getCaseNumber();
+			return dcCaseEntity.getCaseNum();
 		}
 		return null;
 	}
 
 	@Override
 	public List<String> getAllPlans() {
-	   List<PlanEntity> lstPlans = prepo.findAll();
-	   if(lstPlans != null) {
-		   List<String> planNamelst = new ArrayList<>();
-		  for(PlanEntity p : lstPlans) {
-			  String planName = p.getPlanName();
-			  planNamelst.add(planName);
-		  }
-		  return planNamelst;
-	   }
+		List<PlanEntity> lstPlans = prepo.findAll();
+		if (lstPlans != null) {
+			List<String> planNamelst = new ArrayList<>();
+			for (PlanEntity p : lstPlans) {
+				String planName = p.getPlanName();
+				planNamelst.add(planName);
+			}
+			return planNamelst;
+		}
 		return null;
 	}
 
@@ -72,7 +72,7 @@ public class DCServiceImpl implements DCService {
 		EducationEntity eduEntity = new EducationEntity();
 		BeanUtils.copyProperties(einfo, eduEntity);
 		EducationEntity eduentity = edurepo.save(eduEntity);
-		if(eduentity != null) {
+		if (eduentity != null) {
 			return eduEntity.getCaseNum();
 		}
 		return null;
@@ -83,7 +83,7 @@ public class DCServiceImpl implements DCService {
 		IncomeEntity ientity = new IncomeEntity();
 		BeanUtils.copyProperties(iInfo, ientity);
 		IncomeEntity incomeEntity = irepo.save(ientity);
-		if(incomeEntity != null) {
+		if (incomeEntity != null) {
 			return incomeEntity.getCaseNum();
 		}
 		return null;
@@ -94,7 +94,7 @@ public class DCServiceImpl implements DCService {
 		KidsEntity kentity = new KidsEntity();
 		BeanUtils.copyProperties(kinfo, kentity);
 		KidsEntity kidsEntity = krepo.save(kentity);
-		if(kidsEntity != null) {
+		if (kidsEntity != null) {
 			return kidsEntity.getCaseNum();
 		}
 		return null;
@@ -102,14 +102,14 @@ public class DCServiceImpl implements DCService {
 
 	@Override
 	public DCSummary getSummary(Long caseNum) {
-		
+
 		Optional<IncomeEntity> incomeEntity = irepo.findById(caseNum);
 		Optional<EducationEntity> eduEntity = edurepo.findById(caseNum);
 		Optional<KidsEntity> kidsEntity = krepo.findById(caseNum);
-		
-		if(incomeEntity != null &&  eduEntity != null && kidsEntity != null) {
+
+		if (incomeEntity != null && eduEntity != null && kidsEntity != null) {
 			IncomeEntity incomeEntity1 = incomeEntity.get();
-			IncomeInfo Iinfo = new IncomeInfo(); 
+			IncomeInfo Iinfo = new IncomeInfo();
 			BeanUtils.copyProperties(incomeEntity1, Iinfo);
 			EducationEntity eduEntity1 = eduEntity.get();
 			EducationInfo einfo = new EducationInfo();
@@ -117,13 +117,13 @@ public class DCServiceImpl implements DCService {
 			KidsEntity kidsEntity1 = kidsEntity.get();
 			KidsInfo kinfo = new KidsInfo();
 			BeanUtils.copyProperties(kidsEntity1, kinfo);
-			
-			//create summary class object
+
+			// create summary class object
 			DCSummary dcsum = new DCSummary();
 			dcsum.setIInfo(Iinfo);
 			dcsum.setEinfo(einfo);
 			dcsum.setKinfo(kinfo);
-			
+
 			return dcsum;
 		}
 		return null;
