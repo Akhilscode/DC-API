@@ -26,6 +26,7 @@ public class PlanEntity {
 	private LocalDate planEndDate;
 	private Integer planCategoryId;
 	private String activeSw;
+	
 	@CreationTimestamp
 	@Column(name="CREATED_DATE", updatable = false )
 	private LocalDate createdDate;

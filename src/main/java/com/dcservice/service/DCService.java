@@ -19,6 +19,6 @@ public interface DCService {
 	
 	public Long addkidsDetails(List<KidsInfo> kinfo);
 	
-	public DCSummary getSummary(Integer caseId);
+	public DCSummary getSummary(Long caseNum);
 	
 }

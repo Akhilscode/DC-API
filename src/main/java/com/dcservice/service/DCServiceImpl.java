@@ -101,11 +101,11 @@ public class DCServiceImpl implements DCService {
 	}
 
 	@Override
-	public DCSummary getSummary(Integer caseId) {
+	public DCSummary getSummary(Long caseNum) {
 		
-		Optional<IncomeEntity> incomeEntity = irepo.findById(caseId);
-		Optional<EducationEntity> eduEntity = edurepo.findById(caseId);
-		Optional<KidsEntity> kidsEntity = krepo.findById(caseId);
+		Optional<IncomeEntity> incomeEntity = irepo.findById(caseNum);
+		Optional<EducationEntity> eduEntity = edurepo.findById(caseNum);
+		Optional<KidsEntity> kidsEntity = krepo.findById(caseNum);
 		
 		if(incomeEntity != null &&  eduEntity != null && kidsEntity != null) {
 			IncomeEntity incomeEntity1 = incomeEntity.get();
