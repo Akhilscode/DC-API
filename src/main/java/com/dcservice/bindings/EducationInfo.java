@@ -1,13 +1,13 @@
 package com.dcservice.bindings;
 
-import java.time.LocalDate;
 
 import lombok.Data;
 
 @Data
 public class EducationInfo {
 
-	private Integer caseNum;
+	private Long caseNum;
 	private String qualification;
-	private LocalDate year;
+	private Integer year;
+	private String universityName;
 }

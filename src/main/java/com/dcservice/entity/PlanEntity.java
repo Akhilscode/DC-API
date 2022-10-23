@@ -21,6 +21,7 @@ public class PlanEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer planId;
+	private Integer appId;
 	private String planName;
 	private LocalDate planStartDate;		
 	private LocalDate planEndDate;

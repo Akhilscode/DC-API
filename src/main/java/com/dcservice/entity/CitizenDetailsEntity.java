@@ -15,27 +15,38 @@ import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Data;
 
 @Entity
-@Table(name="DC_CASES")
+@Table(name = "CITIZEN_DTLS")
 @Data
-public class DcCaseEntity {
+public class CitizenDetailsEntity {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long caseNum;
-	
 	private Integer appId;
 	
-	private Integer planCategoryId;
+	private String fullName;
 	
-	private String planName;
+	private String email;
 	
-	@CreationTimestamp
+	private Long phNo;
+	
+	private String gender;
+	
+	private Long ssn;
+	
+	private String stateName;
+	
+	private LocalDate dob;
+	
 	@Column(name="CREATED_DATE", updatable = false )
+	@CreationTimestamp
 	private LocalDate createdDate;
-	@UpdateTimestamp
-	@Column(name="UPDATED_DATE",  insertable = false )
-	private LocalDate updatedDate;
-	private String createdBy;
-	private String updatedBy; 
-
 	
+	@Column(name="UPDATED_DATE", insertable = false)
+	@UpdateTimestamp
+	private LocalDate updatedDate;
+	
+	private String createdBy;
+	
+	private String updatedBy;
+
 }

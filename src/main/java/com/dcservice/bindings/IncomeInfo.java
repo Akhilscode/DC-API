@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class IncomeInfo {
-	private Integer caseNum;
-	private Long empIncome;
-	private Long propertyIncome;
-	private Long otherIncome;
+	private Long  caseNum;
+	private Double empIncome;
+	private Double propertyIncome;
+	private Double otherIncome;
 }

@@ -23,7 +23,8 @@ public class EducationEntity {
 	private Integer eduId;
 	private Long caseNum;
 	private String qualification;
-	private LocalDate year;
+	private Integer year;
+	private String universityName;
 	
 	
 	@CreationTimestamp

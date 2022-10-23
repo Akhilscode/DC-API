@@ -1,10 +1,11 @@
 package com.dcservice.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,14 @@ import com.dcservice.bindings.DCSummary;
 import com.dcservice.bindings.EducationInfo;
 import com.dcservice.bindings.IncomeInfo;
 import com.dcservice.bindings.KidsInfo;
+import com.dcservice.bindings.PlanInfo;
+import com.dcservice.entity.CitizenDetailsEntity;
 import com.dcservice.entity.DcCaseEntity;
 import com.dcservice.entity.EducationEntity;
 import com.dcservice.entity.IncomeEntity;
 import com.dcservice.entity.KidsEntity;
 import com.dcservice.entity.PlanEntity;
+import com.dcservice.repository.CitizenDetailsRepository;
 import com.dcservice.repository.DCCasesRepository;
 import com.dcservice.repository.EducationRepository;
 import com.dcservice.repository.IncomeRepository;
@@ -42,42 +46,49 @@ public class DCServiceImpl implements DCService {
 
 	@Autowired
 	private KidsRepository krepo;
+	
+	@Autowired
+	private CitizenDetailsRepository cdr;
 
 	@Override
-	public Long findAppId(Integer appId) {
-		Optional<DcCaseEntity> findById = dcrepo.findById(appId);
-		if (findById.isPresent()) {
-			DcCaseEntity dcCaseEntity = findById.get();
-			return dcCaseEntity.getCaseNum();
-		}
+	public Long loadCaseNum(Integer appId) {
+		  Optional<CitizenDetailsEntity> cdentity = cdr.findById(appId);
+		 if(cdentity.isPresent()) {
+			DcCaseEntity dcentity = new DcCaseEntity();
+			dcentity.setAppId(appId);
+			dcentity = dcrepo.save(dcentity);
+            return dcentity.getCaseNum();
+		 }
+		
 		return null;
 	}
 
 	@Override
-	public List<String> getAllPlans() {
+	public Map<Integer, String> getPlanNames() {
 		List<PlanEntity> lstPlans = prepo.findAll();
 		if (lstPlans != null) {
-			List<String> planNamelst = new ArrayList<>();
+			Map<Integer, String> planNamelst = new HashMap<>();
 			for (PlanEntity p : lstPlans) {
-				String planName = p.getPlanName();
-				planNamelst.add(planName);
+				planNamelst.put(p.getPlanCategoryId(), p.getPlanName()); 
 			}
 			return planNamelst;
 		}
 		return null;
 	}
+	
 
 	@Override
-	public Long addEducationDetails(EducationInfo einfo) {
-		EducationEntity eduEntity = new EducationEntity();
-		BeanUtils.copyProperties(einfo, eduEntity);
-		EducationEntity eduentity = edurepo.save(eduEntity);
-		if (eduentity != null) {
-			return eduEntity.getCaseNum();
-		}
+	public Long savePlanSelection(PlanInfo pi) {
+	   Optional<DcCaseEntity> dcentity = dcrepo.findById(pi.getCaseNum());
+	   if(dcentity.isPresent()) {
+		 DcCaseEntity dcCaseEntity = dcentity.get();
+		 dcCaseEntity.setPlanCategoryId(pi.getPlanCategoryId());
+		 dcrepo.save(dcCaseEntity);
+		 return pi.getCaseNum();
+	   }
 		return null;
 	}
-
+	
 	@Override
 	public Long addIncomeDetails(IncomeInfo iInfo) {
 		IncomeEntity ientity = new IncomeEntity();
@@ -88,45 +99,78 @@ public class DCServiceImpl implements DCService {
 		}
 		return null;
 	}
+	
+		
 
 	@Override
-	public Long addkidsDetails(List<KidsInfo> kinfo) {
-		KidsEntity kentity = new KidsEntity();
-		BeanUtils.copyProperties(kinfo, kentity);
-		KidsEntity kidsEntity = krepo.save(kentity);
-		if (kidsEntity != null) {
-			return kidsEntity.getCaseNum();
+	public Long addEducationDetails(EducationInfo einfo) {
+		EducationEntity eduEntity = new EducationEntity();
+		BeanUtils.copyProperties(einfo, eduEntity);
+		EducationEntity eduentity = edurepo.save(eduEntity);
+		if (eduentity != null) {
+			return einfo.getCaseNum();
+		}
+		return null;
+	}
+
+
+	@Override
+	public Long addkidsDetails(List<KidsInfo> lstkinfo) {
+		
+		KidsEntity kidsEntity = null;
+		
+		for(KidsInfo kf : lstkinfo) {
+			KidsEntity kentity = new KidsEntity();
+			BeanUtils.copyProperties(kf, kentity);
+			 kidsEntity = krepo.save(kentity);
+		}
+			if (kidsEntity != null) {
+				return lstkinfo.get(0).getCaseNum();
 		}
 		return null;
 	}
 
 	@Override
 	public DCSummary getSummary(Long caseNum) {
-
-		Optional<IncomeEntity> incomeEntity = irepo.findById(caseNum);
-		Optional<EducationEntity> eduEntity = edurepo.findById(caseNum);
-		Optional<KidsEntity> kidsEntity = krepo.findById(caseNum);
-
-		if (incomeEntity != null && eduEntity != null && kidsEntity != null) {
-			IncomeEntity incomeEntity1 = incomeEntity.get();
-			IncomeInfo Iinfo = new IncomeInfo();
-			BeanUtils.copyProperties(incomeEntity1, Iinfo);
-			EducationEntity eduEntity1 = eduEntity.get();
-			EducationInfo einfo = new EducationInfo();
-			BeanUtils.copyProperties(eduEntity1, einfo);
-			KidsEntity kidsEntity1 = kidsEntity.get();
-			KidsInfo kinfo = new KidsInfo();
-			BeanUtils.copyProperties(kidsEntity1, kinfo);
-
-			// create summary class object
-			DCSummary dcsum = new DCSummary();
-			dcsum.setIInfo(Iinfo);
-			dcsum.setEinfo(einfo);
-			dcsum.setKinfo(kinfo);
-
-			return dcsum;
-		}
-		return null;
+		
+		String planName = "";
+		
+        IncomeEntity ientity = irepo.findByCaseNum(caseNum);
+        EducationEntity eduentity = edurepo.findByCaseNum(caseNum);
+        List<KidsEntity> lstkentity = krepo.findByCaseNum(caseNum);
+        
+        Optional<DcCaseEntity> dcentity = dcrepo.findById(caseNum);
+        if(dcentity.isPresent()) {
+        	Integer planCategoryId = dcentity.get().getPlanCategoryId();
+        	 PlanEntity pentity = prepo.findByPlanCategoryId(planCategoryId);
+        	if(pentity != null) {
+        	     planName = pentity.getPlanName();
+        	}
+        }
+        
+        DCSummary summary = new DCSummary();
+        summary.setPlanName(planName);
+        
+        IncomeInfo income = new IncomeInfo();
+        BeanUtils.copyProperties(ientity, income);
+        summary.setIInfo(income);
+          
+        EducationInfo education = new EducationInfo();
+        BeanUtils.copyProperties(eduentity, education);
+        summary.setEinfo(education);
+        
+        List<KidsInfo> lstkids = new ArrayList<>();
+        for(KidsEntity ke : lstkentity) {
+        	KidsInfo ki = new KidsInfo();
+        	BeanUtils.copyProperties(ke, ki);
+        	lstkids.add(ki);
+        }
+        
+        summary.setKinfo(lstkids);
+         
+		return summary;
+	}
 	}
 
-}
+	
+
